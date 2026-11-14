@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Hisaab. — the tax agent for every Paytm merchant
 
-## Getting Started
+Paytm settlements in, GST-ready books out, and every rupee of credit found.
+Team **Zero Balance Heroes** · Paytm Build for India AI Hackathon, Chennai · Track 1
 
-First, run the development server:
+## Run it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # optional: add keys for live AI and Tamil voice
+npm run dev                  # http://localhost:3000
+npm test                     # GST rules tests
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+With no keys it runs in **demo mode**: the same tools and rules, sample data, scripted replies.
+Add `GEMINI_API_KEYS` for live tool calling and bill reading, and `SARVAM_API_KEY` for live Tamil voice.
+`DEMO_MODE=1` forces demo mode on stage if Wi-Fi or quotas fail.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Deploy: push to GitHub → import in Vercel (Hobby, free) → add the same env vars.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## The demo (about 2 minutes)
 
-## Learn More
+1. **Send Meena's voice note** — "அக்டோபர் மாச GST ரெடியா?" (Is my GST ready for October?)
+   → agent calls `paytm.getTransactions`, rules find **GST on MDR fees** as credit.
+2. **Send 3 bill photos** → `vision.readBill` extracts GSTIN, items, tax; `rules.validateBill` checks them.
+3. **Answer two questions** — Ravi's ₹5,000 = family, Karthik's ₹8,000 = sale. Hisaab asks, never guesses.
+4. **Draft appears** → output GST, credit (bills + MDR GST), net payable, due date.
+5. **Send to CA** → opens the shareable draft at `/draft/[id]`.
 
-To learn more about Next.js, take a look at the following resources:
+## How it's built
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Piece | Where |
+|---|---|
+| Chat UI + agent trace | `src/components/HisaabDemo.tsx` |
+| Agent (AI SDK tool calling, Gemini) with rules fallback | `src/lib/agent.ts`, `src/app/api/agent/route.ts` |
+| GST rules (deterministic, tested) | `src/lib/gst.ts`, `tests/gst.test.ts` |
+| Paytm data source (sample data in Paytm MCP shape) | `src/lib/paytm.ts`, `src/data/*.json` |
+| Tamil voice (Sarvam STT/TTS, browser fallback) | `src/app/api/voice/*` |
+| CA draft page | `src/app/draft/[id]/page.tsx` |
+| All Tamil/English lines | `src/lib/copy.ts` |
+| Regenerate sample data and bill images | `npm run data` |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Going live on Paytm data:** implement `PaytmSource.getTransactions` in `src/lib/paytm.ts`
+with the Paytm MCP Server (`https://mcp.paytmpayments.com/mcp`, merchant login) via `@ai-sdk/mcp`.
+The agent and rules don't change.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+All merchant data in this repo is synthetic. Meena, Ravi and Karthik are made up.

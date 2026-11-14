@@ -1,0 +1,13 @@
+{
+  "mid": "MEENAP00000000000001",
+  "name": "Meena Provision Store",
+  "owner": "Meena",
+  "city": "Chennai",
+  "gstin": "33ABCPM1234F1Z5",
+  "language": "ta-IN",
+  "salesSlabMix": {
+    "0": 0.35,
+    "5": 0.5,
+    "18": 0.15
+  }
+}

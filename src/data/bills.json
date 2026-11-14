@@ -1,0 +1,127 @@
+[
+  {
+    "id": "bill-1",
+    "image": "/bills/bill-1.png",
+    "supplier": "Sri Murugan Wholesale Traders",
+    "supplierGstin": "33AAKFS4821M1Z2",
+    "invoiceNo": "SMW/2026/1184",
+    "invoiceDate": "2026-10-04",
+    "lines": [
+      {
+        "description": "Ponni Rice 25kg",
+        "hsn": "1006",
+        "qty": 12,
+        "rate": 1550.0,
+        "gstRate": 5,
+        "taxable": 18600.0,
+        "cgst": 465.0,
+        "sgst": 465.0
+      },
+      {
+        "description": "Toor Dal 1kg",
+        "hsn": "0713",
+        "qty": 60,
+        "rate": 155.0,
+        "gstRate": 5,
+        "taxable": 9300.0,
+        "cgst": 232.5,
+        "sgst": 232.5
+      },
+      {
+        "description": "Sugar 1kg",
+        "hsn": "1701",
+        "qty": 80,
+        "rate": 44.0,
+        "gstRate": 5,
+        "taxable": 3520.0,
+        "cgst": 88.0,
+        "sgst": 88.0
+      }
+    ],
+    "taxable": 31420.0,
+    "cgst": 785.5,
+    "sgst": 785.5,
+    "igst": 0.0,
+    "total": 32991.0
+  },
+  {
+    "id": "bill-2",
+    "image": "/bills/bill-2.png",
+    "supplier": "Chennai FMCG Distributors",
+    "supplierGstin": "33AADCC7310K1Z9",
+    "invoiceNo": "CFD-88213",
+    "invoiceDate": "2026-10-11",
+    "lines": [
+      {
+        "description": "Bath Soap (pack of 4)",
+        "hsn": "3401",
+        "qty": 60,
+        "rate": 180.0,
+        "gstRate": 18,
+        "taxable": 10800.0,
+        "cgst": 972.0,
+        "sgst": 972.0
+      },
+      {
+        "description": "Detergent Powder 1kg",
+        "hsn": "3402",
+        "qty": 50,
+        "rate": 120.0,
+        "gstRate": 18,
+        "taxable": 6000.0,
+        "cgst": 540.0,
+        "sgst": 540.0
+      },
+      {
+        "description": "Biscuits (carton)",
+        "hsn": "1905",
+        "qty": 12,
+        "rate": 420.0,
+        "gstRate": 18,
+        "taxable": 5040.0,
+        "cgst": 453.6,
+        "sgst": 453.6
+      }
+    ],
+    "taxable": 21840.0,
+    "cgst": 1965.6,
+    "sgst": 1965.6,
+    "igst": 0.0,
+    "total": 25771.2
+  },
+  {
+    "id": "bill-3",
+    "image": "/bills/bill-3.png",
+    "supplier": "Lakshmi Oil Mills",
+    "supplierGstin": "33AAEFL2290P1ZC",
+    "invoiceNo": "LOM/OCT/0417",
+    "invoiceDate": "2026-10-19",
+    "lines": [
+      {
+        "description": "Groundnut Oil 1L",
+        "hsn": "1508",
+        "qty": 60,
+        "rate": 185.0,
+        "gstRate": 5,
+        "taxable": 11100.0,
+        "cgst": 277.5,
+        "sgst": 277.5
+      },
+      {
+        "description": "Gingelly Oil 1L",
+        "hsn": "1515",
+        "qty": 20,
+        "rate": 260.0,
+        "gstRate": 5,
+        "taxable": 5200.0,
+        "cgst": 130.0,
+        "sgst": 130.0
+      }
+    ],
+    "taxable": 16300.0,
+    "cgst": 407.5,
+    "sgst": 407.5,
+    "igst": 0.0,
+    "total": 17115.0
+  }
+]
