@@ -2,126 +2,127 @@
   {
     "id": "bill-1",
     "image": "/bills/bill-1.png",
-    "supplier": "Sri Murugan Wholesale Traders",
-    "supplierGstin": "33AAKFS4821M1Z2",
-    "invoiceNo": "SMW/2026/1184",
+    "supplier": "Kaveri Rice & Pulses Mandi",
+    "supplierGstin": "33AAKFK4821M1Z2",
+    "invoiceNo": "KRP/2026/1184",
     "invoiceDate": "2026-10-04",
     "lines": [
       {
         "description": "Ponni Rice 25kg",
         "hsn": "1006",
-        "qty": 12,
+        "qty": 40,
         "rate": 1550.0,
         "gstRate": 5,
-        "taxable": 18600.0,
-        "cgst": 465.0,
-        "sgst": 465.0
+        "taxable": 62000.0,
+        "cgst": 1550.0,
+        "sgst": 1550.0
       },
       {
         "description": "Toor Dal 1kg",
         "hsn": "0713",
-        "qty": 60,
+        "qty": 200,
         "rate": 155.0,
         "gstRate": 5,
-        "taxable": 9300.0,
-        "cgst": 232.5,
-        "sgst": 232.5
+        "taxable": 31000.0,
+        "cgst": 775.0,
+        "sgst": 775.0
       },
       {
         "description": "Sugar 1kg",
         "hsn": "1701",
-        "qty": 80,
+        "qty": 250,
         "rate": 44.0,
         "gstRate": 5,
-        "taxable": 3520.0,
-        "cgst": 88.0,
-        "sgst": 88.0
+        "taxable": 11000.0,
+        "cgst": 275.0,
+        "sgst": 275.0
       }
     ],
-    "taxable": 31420.0,
-    "cgst": 785.5,
-    "sgst": 785.5,
+    "taxable": 104000.0,
+    "cgst": 2600.0,
+    "sgst": 2600.0,
     "igst": 0.0,
-    "total": 32991.0
+    "total": 109200.0
   },
   {
     "id": "bill-2",
     "image": "/bills/bill-2.png",
-    "supplier": "Chennai FMCG Distributors",
-    "supplierGstin": "33AADCC7310K1Z9",
-    "invoiceNo": "CFD-88213",
+    "supplier": "Velu FMCG Agencies",
+    "supplierGstin": "33AADCV7310K1Z9",
+    "invoiceNo": "VFA-88213",
     "invoiceDate": "2026-10-11",
     "lines": [
       {
         "description": "Bath Soap (pack of 4)",
         "hsn": "3401",
-        "qty": 60,
+        "qty": 150,
         "rate": 180.0,
         "gstRate": 18,
-        "taxable": 10800.0,
-        "cgst": 972.0,
-        "sgst": 972.0
+        "taxable": 27000.0,
+        "cgst": 2430.0,
+        "sgst": 2430.0
       },
       {
         "description": "Detergent Powder 1kg",
         "hsn": "3402",
-        "qty": 50,
+        "qty": 150,
         "rate": 120.0,
         "gstRate": 18,
-        "taxable": 6000.0,
-        "cgst": 540.0,
-        "sgst": 540.0
+        "taxable": 18000.0,
+        "cgst": 1620.0,
+        "sgst": 1620.0
       },
       {
         "description": "Biscuits (carton)",
         "hsn": "1905",
-        "qty": 12,
+        "qty": 40,
         "rate": 420.0,
         "gstRate": 18,
-        "taxable": 5040.0,
-        "cgst": 453.6,
-        "sgst": 453.6
+        "taxable": 16800.0,
+        "cgst": 1512.0,
+        "sgst": 1512.0
       }
     ],
-    "taxable": 21840.0,
-    "cgst": 1965.6,
-    "sgst": 1965.6,
+    "taxable": 61800.0,
+    "cgst": 5562.0,
+    "sgst": 5562.0,
     "igst": 0.0,
-    "total": 25771.2
+    "total": 72924.0
   },
   {
     "id": "bill-3",
     "image": "/bills/bill-3.png",
-    "supplier": "Lakshmi Oil Mills",
-    "supplierGstin": "33AAEFL2290P1ZC",
-    "invoiceNo": "LOM/OCT/0417",
+    "handwritten": true,
+    "supplier": "Annai Oil Traders",
+    "supplierGstin": "33AAEFA2290P1ZC",
+    "invoiceNo": "AOT/OCT/0417",
     "invoiceDate": "2026-10-19",
     "lines": [
       {
         "description": "Groundnut Oil 1L",
         "hsn": "1508",
-        "qty": 60,
+        "qty": 200,
         "rate": 185.0,
         "gstRate": 5,
-        "taxable": 11100.0,
-        "cgst": 277.5,
-        "sgst": 277.5
+        "taxable": 37000.0,
+        "cgst": 925.0,
+        "sgst": 925.0
       },
       {
         "description": "Gingelly Oil 1L",
         "hsn": "1515",
-        "qty": 20,
+        "qty": 60,
         "rate": 260.0,
         "gstRate": 5,
-        "taxable": 5200.0,
-        "cgst": 130.0,
-        "sgst": 130.0
+        "taxable": 15600.0,
+        "cgst": 390.0,
+        "sgst": 390.0
       }
     ],
-    "taxable": 16300.0,
-    "cgst": 407.5,
-    "sgst": 407.5,
+    "taxable": 52600.0,
+    "cgst": 1315.0,
+    "sgst": 1315.0,
     "igst": 0.0,
-    "total": 17115.0
+    "total": 55230.0
   }
 ]

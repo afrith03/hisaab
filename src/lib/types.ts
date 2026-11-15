@@ -8,6 +8,8 @@ export type Txn = {
   txnAmount: number;
   paymentMode: string;
   flow: "P2M" | "P2P";
+  /** Money into her account (default) or paid out from her Paytm UPI. payerName/payerVpa hold the other party. */
+  direction?: "IN" | "OUT";
   payerName: string;
   payerVpa: string;
   status: string;
@@ -31,6 +33,8 @@ export type BillLine = {
 export type Bill = {
   id: string;
   image?: string;
+  /** Bill-book invoice filled in by hand (common with local wholesalers). */
+  handwritten?: boolean;
   supplier: string;
   supplierGstin: string;
   invoiceNo: string;
@@ -50,6 +54,8 @@ export type Merchant = {
   city: string;
   gstin: string;
   language: string;
+  /** Only "regular" GST registrants can claim input tax credit. */
+  gstType: "regular" | "composition" | "unregistered";
   salesSlabMix: Record<string, number>;
 };
 
@@ -63,8 +69,11 @@ export type Question = {
   amount: number;
   payerName: string;
   date: string;
-  text: { ta: string; en: string };
-  options: { value: "personal" | "business"; ta: string; en: string }[];
+  text: { ta: string; hi: string; en: string };
+  options: { value: "personal" | "business"; ta: string; hi: string; en: string }[];
+  /** Where the money came from, straight from the Paytm transaction record. */
+  direction: "IN" | "OUT";
+  source: { channel: string; flow: string; payerVpa: string; txnId: string; time: string; settledTo: string };
 };
 
 export type GstDraft = {

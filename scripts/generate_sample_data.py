@@ -9,7 +9,10 @@ import random
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
-random.seed(15112026)
+import os
+random.seed(int(os.environ.get("SEED", "777")))
+BULK_SHARE = float(os.environ.get("BULK_SHARE", "0.30"))
+BULK_MAX = int(os.environ.get("BULK_MAX", "60000"))
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "src" / "data"
 IMG = ROOT / "public" / "bills"
@@ -23,6 +26,7 @@ MERCHANT = {
     "city": "Chennai",
     "gstin": "33ABCPM1234F1Z5",
     "language": "ta-IN",
+    "gstType": "regular",
     # Share of business receipts by GST slab (GST-inclusive prices). Configurable per merchant.
     "salesSlabMix": {"0": 0.35, "5": 0.50, "18": 0.15},
 }
@@ -30,7 +34,7 @@ MERCHANT = {
 FIRST = ["Arun", "Priya", "Karthik", "Divya", "Suresh", "Lakshmi", "Vijay", "Kavya", "Ramesh", "Anitha",
          "Senthil", "Deepa", "Mohan", "Revathi", "Ganesh", "Sangeetha", "Bala", "Nithya", "Prakash", "Meera"]
 LAST = ["K", "S", "R", "M", "P", "V", "N", "T"]
-BULK = ["Hotel Saravana Mess", "Annapoorna Tiffin Centre", "Kumar Tea Stall", "Sri Balaji Catering"]
+BULK = ["Hotel Arusuvai Mess", "Amudham Tiffin Centre", "Kannan Tea Stall", "Sri Velan Catering", "Malar Bakery", "Thendral Hostel Mess"]
 
 
 def mdr_for(amount: float) -> float:
@@ -47,9 +51,9 @@ for d in range(31):
     day = start + timedelta(days=d)
     for _ in range(random.randint(6, 8)):
         n += 1
-        bulk = random.random() < 0.14
+        bulk = random.random() < BULK_SHARE
         if bulk:
-            amount = float(random.randrange(2100, 15000, 50))
+            amount = float(random.randrange(4000, BULK_MAX, 50))
             payer = random.choice(BULK)
         else:
             amount = float(random.randrange(40, 1900, 10))
@@ -85,20 +89,27 @@ for i, (ts, amt, name, vpa) in enumerate(unclear):
         "paymentMode": "UPI", "flow": "P2P", "payerName": name, "payerVpa": vpa, "status": "TXN_SUCCESS",
         "mdr": 0.0, "gstOnMdr": 0.0, "settledAmount": amt, "settlementDate": ts[:10],
     })
+# One payment Meena made from her Paytm UPI: was it for the shop or personal?
+n += 1
+txns.append({
+    "txnId": f"T{20261000000 + n}", "orderId": f"ORD{n:05d}", "txnDate": "2026-10-18T16:20:00", "txnAmount": 12000.0,
+    "paymentMode": "UPI", "flow": "P2P", "direction": "OUT", "payerName": "Selvam R", "payerVpa": "selvam.r@okicici",
+    "status": "TXN_SUCCESS", "mdr": 0.0, "gstOnMdr": 0.0, "settledAmount": -12000.0, "settlementDate": "2026-10-18",
+})
 txns.sort(key=lambda t: t["txnDate"])
 
 bills = [
-    {"id": "bill-1", "image": "/bills/bill-1.png", "supplier": "Sri Murugan Wholesale Traders",
-     "supplierGstin": "33AAKFS4821M1Z2", "invoiceNo": "SMW/2026/1184", "invoiceDate": "2026-10-04",
-     "items": [["Ponni Rice 25kg", "1006", 12, 1550.0, 5], ["Toor Dal 1kg", "0713", 60, 155.0, 5],
-               ["Sugar 1kg", "1701", 80, 44.0, 5]]},
-    {"id": "bill-2", "image": "/bills/bill-2.png", "supplier": "Chennai FMCG Distributors",
-     "supplierGstin": "33AADCC7310K1Z9", "invoiceNo": "CFD-88213", "invoiceDate": "2026-10-11",
-     "items": [["Bath Soap (pack of 4)", "3401", 60, 180.0, 18], ["Detergent Powder 1kg", "3402", 50, 120.0, 18],
-               ["Biscuits (carton)", "1905", 12, 420.0, 18]]},
-    {"id": "bill-3", "image": "/bills/bill-3.png", "supplier": "Lakshmi Oil Mills",
-     "supplierGstin": "33AAEFL2290P1ZC", "invoiceNo": "LOM/OCT/0417", "invoiceDate": "2026-10-19",
-     "items": [["Groundnut Oil 1L", "1508", 60, 185.0, 5], ["Gingelly Oil 1L", "1515", 20, 260.0, 5]]},
+    {"id": "bill-1", "image": "/bills/bill-1.png", "supplier": "Kaveri Rice & Pulses Mandi",
+     "supplierGstin": "33AAKFK4821M1Z2", "invoiceNo": "KRP/2026/1184", "invoiceDate": "2026-10-04",
+     "items": [["Ponni Rice 25kg", "1006", 40, 1550.0, 5], ["Toor Dal 1kg", "0713", 200, 155.0, 5],
+               ["Sugar 1kg", "1701", 250, 44.0, 5]]},
+    {"id": "bill-2", "image": "/bills/bill-2.png", "supplier": "Velu FMCG Agencies",
+     "supplierGstin": "33AADCV7310K1Z9", "invoiceNo": "VFA-88213", "invoiceDate": "2026-10-11",
+     "items": [["Bath Soap (pack of 4)", "3401", 150, 180.0, 18], ["Detergent Powder 1kg", "3402", 150, 120.0, 18],
+               ["Biscuits (carton)", "1905", 40, 420.0, 18]]},
+    {"id": "bill-3", "image": "/bills/bill-3.png", "handwritten": True, "supplier": "Annai Oil Traders",
+     "supplierGstin": "33AAEFA2290P1ZC", "invoiceNo": "AOT/OCT/0417", "invoiceDate": "2026-10-19",
+     "items": [["Groundnut Oil 1L", "1508", 200, 185.0, 5], ["Gingelly Oil 1L", "1515", 60, 260.0, 5]]},
 ]
 for b in bills:
     lines = []
@@ -126,7 +137,79 @@ def font(size, bold=False):
     p = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
     return ImageFont.truetype(p, size)
 
+FONTS = Path(__file__).resolve().parent / "fonts"
+
+def hand(size, bold=False):
+    return ImageFont.truetype(str(FONTS / ("kalam-latin-700-normal.woff" if bold else "kalam-latin-400-normal.woff")), size)
+
+def render_handwritten(b):
+    """A pre-printed bill book page filled in by hand in blue ink: how most local wholesalers bill."""
+    rnd = random.Random(42)
+    W, H = 900, 1180
+    paper, maroon, ink = (247, 241, 214), (128, 28, 40), (24, 46, 140)
+    im = Image.new("RGB", (W, H), paper)
+    dr = ImageDraw.Draw(im)
+    jit = lambda: rnd.randint(-3, 3)
+    # Printed letterhead (maroon, as on a bill book)
+    dr.rectangle([28, 28, W - 28, H - 28], outline=maroon, width=3)
+    dr.text((W // 2, 62), "|| Sri Annai Thunai ||", font=font(16), fill=maroon, anchor="mm")
+    dr.text((W // 2, 105), b["supplier"].upper(), font=font(36, True), fill=maroon, anchor="mm")
+    dr.text((W // 2, 145), "Wholesale dealers in Groundnut & Gingelly Oil", font=font(17), fill=maroon, anchor="mm")
+    dr.text((W // 2, 172), "45, Oil Mongers Street, Chennai - 600001  ·  Ph: 98410 XXXXX", font=font(16), fill=maroon, anchor="mm")
+    dr.text((W // 2, 200), f"GSTIN : {b['supplierGstin']}", font=font(19, True), fill=maroon, anchor="mm")
+    dr.line([40, 222, W - 40, 222], fill=maroon, width=2)
+    dr.rectangle([W // 2 - 95, 234, W // 2 + 95, 266], outline=maroon, width=2)
+    dr.text((W // 2, 250), "TAX INVOICE", font=font(18, True), fill=maroon, anchor="mm")
+    # Pre-printed fields, filled by hand
+    dr.text((50, 290), "No.", font=font(18), fill=maroon)
+    dr.text((95, 278 + jit()), b["invoiceNo"].split("/")[-1], font=hand(34, True), fill=(170, 20, 30))  # red serial
+    dr.text((600, 290), "Date :", font=font(18), fill=maroon)
+    dr.line([665, 314, 850, 314], fill=maroon, width=1)
+    dr.text((672, 280 + jit()), datetime.fromisoformat(b["invoiceDate"]).strftime("%d/%m/%y"), font=hand(32), fill=ink)
+    dr.text((50, 342), "M/s.", font=font(18), fill=maroon)
+    dr.line([100, 366, 850, 366], fill=maroon, width=1)
+    dr.text((112, 330 + jit()), "Meena Provision Store, Chennai", font=hand(32), fill=ink)
+    dr.text((50, 392), "Party GSTIN :", font=font(18), fill=maroon)
+    dr.line([180, 416, 600, 416], fill=maroon, width=1)
+    dr.text((190, 380 + jit()), MERCHANT["gstin"], font=hand(30), fill=ink)
+    # Ruled table
+    top, bot = 440, 800
+    cols = [40, 90, 420, 530, 620, 720, W - 40]
+    dr.rectangle([40, top, W - 40, bot], outline=maroon, width=2)
+    dr.line([40, top + 40, W - 40, top + 40], fill=maroon, width=2)
+    for x in cols[1:-1]:
+        dr.line([x, top, x, bot], fill=maroon, width=1)
+    for x0, x1, h in zip(cols, cols[1:], ["S.No", "Particulars", "HSN", "Qty", "Rate", "Amount"]):
+        dr.text(((x0 + x1) // 2, top + 20), h, font=font(16, True), fill=maroon, anchor="mm")
+    y = top + 58
+    for i, l in enumerate(b["lines"], 1):
+        cells = [str(i), l["description"].replace(" 1L", " (1 Ltr tin)"), l["hsn"], str(l["qty"]), f"{l['rate']:.0f}", f"{l['taxable']:,.0f}"]
+        for (x0, x1), v in zip(zip(cols, cols[1:]), cells):
+            dr.text((x0 + 8 + jit(), y + jit()), v, font=hand(30), fill=ink)
+        y += 62
+    # Hand-written totals
+    ty = bot + 18
+    rows = [("Total", f"{b['taxable']:,.0f}"), ("CGST 2.5%", f"{b['cgst']:,.0f}"), ("SGST 2.5%", f"{b['sgst']:,.0f}"), ("Grand Total", f"{b['total']:,.0f}/-")]
+    for label, val in rows:
+        bold = label == "Grand Total"
+        dr.text((480, ty + jit()), label, font=hand(30, bold), fill=ink)
+        dr.text((710, ty + jit()), val, font=hand(30, bold), fill=ink)
+        ty += 46
+    dr.line([700, ty - 50, 860, ty - 50], fill=ink, width=2)
+    dr.text((50, bot + 30), "Rupees Fifty Five Thousand", font=hand(26), fill=ink)
+    dr.text((50, bot + 64), "Two Hundred Thirty only", font=hand(26), fill=ink)
+    # Signature scribble + printed footer
+    pts = [(640 + k * 9, H - 135 + int(10 * __import__("math").sin(k / 1.7)) + rnd.randint(-4, 4)) for k in range(22)]
+    dr.line(pts, fill=ink, width=3)
+    dr.text((W - 60, H - 80), f"For {b['supplier'].upper()}", font=font(15, True), fill=maroon, anchor="rm")
+    dr.text((60, H - 80), "E. & O.E.   Goods once sold cannot be taken back.", font=font(14), fill=maroon)
+    im = im.rotate(rnd.uniform(-2.2, -1.2), expand=True, fillcolor=(190, 182, 168), resample=Image.BICUBIC).filter(ImageFilter.GaussianBlur(0.7))
+    im.save(IMG / f"{b['id']}.png", optimize=True)
+
 for b in bills:
+    if b.get("handwritten"):
+        render_handwritten(b)
+        continue
     W, H = 900, 1180
     im = Image.new("RGB", (W, H), (250, 248, 240))
     dr = ImageDraw.Draw(im)

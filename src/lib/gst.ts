@@ -37,6 +37,7 @@ export function classify(txns: Txn[], answers: Record<string, "personal" | "busi
       return { ...t, classification: answers[t.txnId], reason: "Confirmed by merchant" };
     }
     if (t.flow === "P2M") return { ...t, classification: "business", reason: "Paid to shop QR" };
+    if (t.direction === "OUT" && t.txnAmount < 3000) return { ...t, classification: "personal", reason: "Small payment out" };
     if (t.txnAmount >= 3000) {
       return { ...t, classification: "unclear", reason: "Large direct transfer from an individual" };
     }
@@ -76,10 +77,13 @@ export function buildDraft(args: {
   answers?: Record<string, "personal" | "business">;
 }): GstDraft {
   const { merchant, period, bills } = args;
-  const classified = classify(args.txns, args.answers);
+  // Money paid out is never a sale: keep it out of receipts and output tax.
+  const outgoing = classify(args.txns.filter((t) => t.direction === "OUT"), args.answers);
+  const classified = classify(args.txns.filter((t) => t.direction !== "OUT"), args.answers);
   const business = classified.filter((t) => t.classification === "business");
   const personal = classified.filter((t) => t.classification === "personal");
-  const unclear = classified.filter((t) => t.classification === "unclear");
+  const unclear = [...classified, ...outgoing].filter((t) => t.classification === "unclear");
+  const shopPayments = outgoing.filter((t) => t.classification === "business");
 
   const businessValue = r2(business.reduce((s, t) => s + t.txnAmount, 0));
   const out = outputTax(businessValue, merchant.salesSlabMix);
@@ -94,6 +98,8 @@ export function buildDraft(args: {
   const notes: string[] = [];
   const mismatched = mdrTxns.filter((t) => Math.abs(t.mdr - expectedMdr(t)) > 0.01);
   if (mismatched.length) notes.push(`${mismatched.length} payment(s) had an MDR deduction that doesn't match the 0.4% rule.`);
+  for (const t of shopPayments)
+    notes.push(`₹${t.txnAmount.toLocaleString("en-IN")} paid to ${t.payerName} on ${t.txnDate.slice(0, 10)} is a shop purchase: its GST can be claimed once the supplier's tax invoice is added.`);
   if (unclear.length) notes.push(`${unclear.length} transfer(s) still need the merchant's confirmation and are left out of sales.`);
   notes.push(`Rules version ${RULES_VERSION}. Draft for review by the merchant's CA before filing.`);
 

@@ -29,7 +29,14 @@ test("sample data MDR matches the rule on every payment", () => {
 test("large direct transfers are asked about, not guessed", () => {
   const c = classify(txns as any);
   const unclear = c.filter((t) => t.classification === "unclear").map((t) => t.payerName);
-  assert.deepEqual(unclear.sort(), ["Karthik Subramanian", "Ravi Kumar"]);
+  assert.deepEqual(unclear.sort(), ["Karthik Subramanian", "Ravi Kumar", "Selvam R"]);
+});
+
+test("money paid out is never counted as a sale", () => {
+  const out = (txns as any[]).find((t) => t.direction === "OUT");
+  const a = buildDraft({ merchant: merchant as any, period: "2026-10", txns: txns as any, bills: [], answers: { [out.txnId]: "business" } });
+  const b = buildDraft({ merchant: merchant as any, period: "2026-10", txns: (txns as any[]).filter((t) => t !== out), bills: [], answers: {} });
+  assert.equal(a.receipts.businessValue, b.receipts.businessValue);
 });
 
 test("output tax extracts GST from inclusive prices", () => {

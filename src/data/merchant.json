@@ -5,6 +5,7 @@
   "city": "Chennai",
   "gstin": "33ABCPM1234F1Z5",
   "language": "ta-IN",
+  "gstType": "regular",
   "salesSlabMix": {
     "0": 0.35,
     "5": 0.5,

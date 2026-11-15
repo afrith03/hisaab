@@ -13,7 +13,8 @@ npm test                     # GST rules tests
 ```
 
 With no keys it runs in **demo mode**: the same tools and rules, sample data, scripted replies.
-Add `GEMINI_API_KEYS` for live tool calling and bill reading, and `SARVAM_API_KEY` for live Tamil voice.
+Add `SARVAM_API_KEY` and everything goes live on Sarvam: Sarvam-105B tool calling, Sarvam Vision bill reading,
+Saaras Tamil speech-to-text and Bulbul Tamil voice. Any Sarvam call that fails falls back to the rules path, and the trace says so.
 `DEMO_MODE=1` forces demo mode on stage if Wi-Fi or quotas fail.
 
 Deploy: push to GitHub → import in Vercel (Hobby, free) → add the same env vars.
@@ -32,7 +33,8 @@ Deploy: push to GitHub → import in Vercel (Hobby, free) → add the same env v
 | Piece | Where |
 |---|---|
 | Chat UI + agent trace | `src/components/HisaabDemo.tsx` |
-| Agent (AI SDK tool calling, Gemini) with rules fallback | `src/lib/agent.ts`, `src/app/api/agent/route.ts` |
+| Agent (Sarvam-105B tool calling) with rules fallback | `src/lib/agent.ts`, `src/app/api/agent/route.ts` |
+| Sarvam client (chat, Vision extract, STT, TTS) | `src/lib/sarvam.ts` |
 | GST rules (deterministic, tested) | `src/lib/gst.ts`, `tests/gst.test.ts` |
 | Paytm data source (sample data in Paytm MCP shape) | `src/lib/paytm.ts`, `src/data/*.json` |
 | Tamil voice (Sarvam STT/TTS, browser fallback) | `src/app/api/voice/*` |
@@ -41,7 +43,23 @@ Deploy: push to GitHub → import in Vercel (Hobby, free) → add the same env v
 | Regenerate sample data and bill images | `npm run data` |
 
 **Going live on Paytm data:** implement `PaytmSource.getTransactions` in `src/lib/paytm.ts`
-with the Paytm MCP Server (`https://mcp.paytmpayments.com/mcp`, merchant login) via `@ai-sdk/mcp`.
+with the Paytm MCP Server (`https://mcp.paytmpayments.com/mcp`, merchant login).
 The agent and rules don't change.
+
+## Who it's for
+
+Regular GST-registered Paytm merchants. Input tax credit is **set off against the GST they owe**;
+it is not a cash refund. Composition-scheme and unregistered shops can't claim it, and Hisaab says so.
+A credit counts only when the supplier's invoice carries the merchant's GSTIN and shows in GSTR-2B.
+
+## What's real vs simulated
+
+| Piece | Status |
+|---|---|
+| GST rules (MDR rule from 15 Oct 2026, slabs, set-off, due date) | Real, unit-tested |
+| Agent tool calling, bill reading, Tamil voice | Real on Sarvam with a key; rules fallback without |
+| Paytm payments and settlements | Simulated sample month in Paytm's record shape |
+| Purchase bills | Three sample invoices |
+| Filing | Not done: the CA reviews the draft and files |
 
 All merchant data in this repo is synthetic. Meena, Ravi and Karthik are made up.
