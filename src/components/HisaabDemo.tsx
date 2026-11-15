@@ -65,6 +65,12 @@ export default function HisaabDemo() {
   const [draft, setDraft] = useState<GstDraft | null>(null);
   const [lang, setLang] = useState<Lang>("ta");
   const [showTrace, setShowTrace] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);   // bill photo opened full size
+  const [showPanel, setShowPanel] = useState(false);              // mobile: progress sheet over the chat
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") { setPreview(null); setShowPanel(false); } };
+    window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey);
+  }, []);
   const [story, setStory] = useState<Record<StepKey, string>>({} as Record<StepKey, string>);
   const note = (k: StepKey, text: string) => setStory((st) => ({ ...st, [k]: text }));
   const speech = LANGS.find((l) => l.id === lang)!.speech;
@@ -263,54 +269,60 @@ export default function HisaabDemo() {
   const totalCredit = credit.mdr + credit.bills;
 
   return (
-    <main className="h-screen overflow-hidden bg-page">
-      <header className="flex items-center justify-between bg-navy px-6 py-3 text-white">
+    <main className="flex h-[100dvh] flex-col overflow-hidden bg-page">
+      <header className="flex flex-wrap items-center justify-between gap-2 bg-navy px-3 py-2 text-white lg:px-6 lg:py-3">
         <div className="flex items-center gap-3">
-          <span className="text-2xl font-extrabold tracking-tight">Hisaab<span className="text-sky">.</span></span>
-          <span className="rounded-full bg-sky px-3 py-0.5 text-[11px] font-bold tracking-wide text-navy">GST AGENT FOR PAYTM MERCHANTS</span>
+          <span className="text-xl font-extrabold tracking-tight lg:text-2xl">Hisaab<span className="text-sky">.</span></span>
+          <span className="hidden rounded-full bg-sky px-3 py-0.5 text-[11px] font-bold tracking-wide text-navy md:inline">GST AGENT FOR PAYTM MERCHANTS</span>
         </div>
-        <div className="flex items-center gap-2 text-xs">
+        <div className="flex flex-wrap items-center justify-end gap-1.5 text-xs lg:gap-2">
           <div className="flex overflow-hidden rounded-full bg-white/10 p-0.5" data-testid="lang">
             {LANGS.map((l) => (
               <button key={l.id} onClick={() => { stopVoice(); setLang(l.id); }} data-testid={`lang-${l.id}`}
-                className={`tamil rounded-full px-3 py-1 font-semibold ${lang === l.id ? "bg-white text-navy" : "text-white/80 hover:text-white"}`}>{l.label}</button>
+                className={`tamil rounded-full px-2.5 py-1 font-semibold lg:px-3 ${lang === l.id ? "bg-white text-navy" : "text-white/80 hover:text-white"}`}>{l.label}</button>
             ))}
           </div>
-          <span data-testid="live" className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13px] font-bold ${cfg.ai ? "bg-good text-white" : "bg-white/10 text-white/80"}`}>
+          <span data-testid="live" className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-bold lg:px-3.5 lg:py-1.5 lg:text-[13px] ${cfg.ai ? "bg-good text-white" : "bg-white/10 text-white/80"}`}>
             {cfg.ai && <span className="h-2 w-2 animate-pulse rounded-full bg-white" />}
-            {cfg.ai ? "LIVE AI · Sarvam" : "Demo mode"}
+            {cfg.ai ? <>LIVE<span className="hidden sm:inline">&nbsp;AI · Sarvam</span></> : "Demo"}
           </span>
-          <button onClick={() => setShowReal((v) => !v)} data-testid="real" className="rounded-full bg-white/10 px-3 py-1 text-white/90 hover:bg-white/20">What&apos;s real?</button>
-          <button onClick={() => { stopVoice(); setSpeak((s) => !s); }} className="rounded-full bg-white/10 px-3 py-1 text-white/90 hover:bg-white/20">{speak ? "Voice on" : "Voice off"}</button>
-          <button onClick={reset} className="rounded-full border border-white/40 px-3 py-1 text-white hover:bg-white/10">Restart</button>
+          <button onClick={() => { setShowReal((v) => !v); setShowPanel(true); }} data-testid="real" className="hidden rounded-full bg-white/10 px-3 py-1 text-white/90 hover:bg-white/20 sm:inline-block">What&apos;s real?</button>
+          <button onClick={() => { stopVoice(); setSpeak((s) => !s); }} className="rounded-full bg-white/10 px-3 py-1 text-white/90 hover:bg-white/20">{speak ? "🔊" : "🔇"}<span className="hidden sm:inline"> {speak ? "Voice on" : "Voice off"}</span></button>
+          <button onClick={reset} className="rounded-full border border-white/40 px-3 py-1 text-white hover:bg-white/10">↺<span className="hidden sm:inline"> Restart</span></button>
         </div>
       </header>
 
-      <div className="mx-auto grid h-[calc(100vh-64px)] max-w-6xl grid-cols-1 gap-6 px-6 py-4 lg:grid-cols-[400px_1fr]">
-        {/* Phone */}
-        <section className="mx-auto w-full max-w-[400px] overflow-hidden rounded-[2.2rem] border-[10px] border-[#1d2433] bg-white shadow-[0_20px_50px_rgba(0,41,112,.18)]">
+      <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col lg:grid lg:grid-cols-[400px_1fr] lg:gap-6 lg:px-6 lg:py-4">
+        {/* Phone: full screen on mobile, a phone frame on desktop */}
+        <section className="flex min-h-0 w-full flex-1 flex-col overflow-hidden bg-white lg:mx-auto lg:block lg:max-w-[400px] lg:flex-none lg:rounded-[2.2rem] lg:border-[10px] lg:border-[#1d2433] lg:shadow-[0_20px_50px_rgba(0,41,112,.18)]">
           <div className="flex items-center gap-3 bg-navy px-4 py-3 text-white">
             <div className="grid h-9 w-9 place-items-center rounded-full bg-sky text-sm font-extrabold text-navy">H.</div>
             <div className="flex-1">
               <div className="text-sm font-semibold">Hisaab</div>
               <div className="text-[11px] text-white/70">{typing ? "typing…" : "GST helper · Meena Provision Store"}</div>
             </div>
-            <span className="rounded bg-white/15 px-1.5 py-0.5 text-[10px] font-semibold">in your Paytm app</span>
+            <span className="hidden rounded bg-white/15 px-1.5 py-0.5 text-[10px] font-semibold sm:inline lg:inline">in your Paytm app</span>
           </div>
-          <div ref={chatRef} className="h-[calc(100vh-235px)] min-h-[420px] space-y-2 overflow-y-auto bg-[#eef3fa] px-3 py-4" data-testid="chat">
+          {/* Mobile only: the money so far, and a way into the progress view */}
+          <button onClick={() => setShowPanel(true)} data-testid="mobile-progress"
+            className="flex items-center justify-between border-b border-edge bg-[#e6f7fd] px-4 py-2 text-left lg:hidden">
+            <span className="text-[12px] text-sub">Credit found <b className="text-[15px] text-navy">{inr0(totalCredit)}</b>{draftCredit ? <> · <b className="text-good">{inrK(draftCredit * 12)}</b>/yr</> : null}</span>
+            <span className="text-[12px] font-semibold text-sky">Progress ›</span>
+          </button>
+          <div ref={chatRef} className="min-h-0 flex-1 space-y-2 overflow-y-auto bg-[#eef3fa] px-3 py-4 lg:h-[calc(100vh-235px)] lg:min-h-[420px] lg:flex-none" data-testid="chat">
             {msgs.length === 0 && (
-              <div className="mx-auto mt-20 max-w-[270px] rounded-xl bg-white p-4 text-center text-xs text-sub shadow-sm">
+              <div className="mx-auto mt-10 max-w-[270px] rounded-xl bg-white p-4 lg:mt-20 text-center text-xs text-sub shadow-sm">
                 Meena runs a provision store in Chennai and supplies a few small hotels. She takes payments on Paytm. It&apos;s mid-November and her October GST is due on the 20th.
               </div>
             )}
-            {msgs.map((m) => <Bubble key={m.id} m={m} lang={lang} answers={answers} onAnswer={answer} onSend={sendToCa} stage={stage} />)}
+            {msgs.map((m) => <Bubble key={m.id} m={m} lang={lang} answers={answers} onAnswer={answer} onSend={sendToCa} onPreview={setPreview} stage={stage} />)}
             {typing && (
               <div className="pop w-fit rounded-2xl rounded-tl-sm bg-white px-4 py-3 shadow-sm">
                 <span className="dot inline-block h-2 w-2 rounded-full bg-sky" /> <span className="dot inline-block h-2 w-2 rounded-full bg-sky" /> <span className="dot inline-block h-2 w-2 rounded-full bg-sky" />
               </div>
             )}
           </div>
-          <div className="flex items-center gap-2 border-t border-edge bg-white px-3 py-3">
+          <div className="flex items-center gap-2 border-t border-edge bg-white px-3 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
             {stage === "idle" && (
               <button data-testid="voice" onClick={toggleRecord} className={`flex flex-1 items-center justify-center gap-2 rounded-full py-2.5 text-sm font-semibold text-white ${recording ? "bg-[#e5484d]" : "bg-sky"}`}>
                 <MicIcon /> {recording ? "Recording… tap to send" : cfg.voice ? `Tap to speak (${LANGS.find((l) => l.id === lang)!.label})` : "Send Meena's voice note"}
@@ -330,8 +342,12 @@ export default function HisaabDemo() {
         </section>
 
         {/* Story panel: plain words by default, the agent trace one tap away */}
-        <section className="flex min-h-0 flex-col gap-4">
-          <div className="grid grid-cols-4 gap-3">
+        <section className={`${showPanel ? "fixed inset-0 z-40 flex overflow-y-auto bg-page p-3" : "hidden"} min-h-0 flex-col gap-3 lg:static lg:z-auto lg:flex lg:gap-4 lg:overflow-visible lg:bg-transparent lg:p-0`} data-testid="panel">
+          <div className="flex items-center justify-between lg:hidden">
+            <span className="text-base font-bold text-navy">Meena&apos;s progress</span>
+            <button onClick={() => setShowPanel(false)} className="rounded-full bg-navy px-4 py-1.5 text-sm font-semibold text-white" data-testid="panel-close">Back to chat</button>
+          </div>
+          <div className="grid grid-cols-2 gap-2 lg:grid-cols-4 lg:gap-3">
             <Stat label="GST on UPI fees" value={inr0(credit.mdr)} hint="new since 15 Oct" accent="text-warn" />
             <Stat label="Credit from bills" value={inr0(credit.bills)} hint="read from photos" accent="text-navy" />
             <Stat label="Credit found" value={inr0(totalCredit)} hint="October · off her GST bill" accent="text-white" big />
@@ -388,6 +404,12 @@ export default function HisaabDemo() {
 
         </section>
       </div>
+      {preview && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 bg-black/85 p-4" onClick={() => setPreview(null)} data-testid="preview">
+          <img src={preview} alt="Purchase bill, full size" className="max-h-[85dvh] max-w-full rounded-lg bg-white object-contain shadow-2xl" />
+          <span className="text-sm text-white/80">Tap anywhere to close</span>
+        </div>
+      )}
     </main>
   );
 }
@@ -410,8 +432,8 @@ function Stat({ label, value, hint, accent, big, testid }: { label: string; valu
   );
 }
 
-function Bubble({ m, lang, answers, onAnswer, onSend, stage }: {
-  m: Msg; lang: Lang; answers: Record<string, string>; onAnswer: (q: Question, v: "personal" | "business") => void; onSend: (id: string) => void; stage: Stage;
+function Bubble({ m, lang, answers, onAnswer, onSend, onPreview, stage }: {
+  m: Msg; lang: Lang; answers: Record<string, string>; onAnswer: (q: Question, v: "personal" | "business") => void; onSend: (id: string) => void; onPreview: (src: string) => void; stage: Stage;
 }) {
   const mine = m.from === "me";
   const base = `pop max-w-[85%] rounded-2xl px-3 py-2 text-[14px] text-text shadow-sm ${mine ? "ml-auto rounded-tr-sm bg-[#d9f3fd]" : "rounded-tl-sm bg-white"}`;
@@ -441,7 +463,12 @@ function Bubble({ m, lang, answers, onAnswer, onSend, stage }: {
     return (
       <div className={`${base} p-1`}>
         <div className="grid grid-cols-3 gap-1">
-          {m.images.map((src) => <img key={src} src={src} alt="Purchase bill" className="h-28 w-full rounded object-cover object-top" />)}
+          {m.images.map((src, i) => (
+            <button key={src} onClick={() => onPreview(src)} data-testid={`bill-thumb-${i}`} className="group relative block" aria-label="Open bill">
+              <img src={src} alt="Purchase bill" className="h-28 w-full rounded object-cover object-top transition group-hover:opacity-90" />
+              <span className="absolute bottom-1 right-1 rounded bg-black/55 px-1 text-[10px] text-white">⤢</span>
+            </button>
+          ))}
         </div>
         <div className="px-2 pb-1">{time}</div>
       </div>
